@@ -12,46 +12,42 @@
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: #ffffff;
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 60px 20px 120px 20px;
     }
     .container {
-      max-width: 700px;
+      max-width: 680px;
       margin: 0 auto;
-      background: white;
-      border-radius: 16px;
-      padding: 50px 40px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
     }
     h1 {
-      font-size: 36px;
+      font-size: 42px;
       font-weight: 700;
       color: #1a202c;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
       line-height: 1.2;
     }
     h2 {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 600;
       color: #2d3748;
-      margin: 32px 0 16px 0;
+      margin: 40px 0 20px 0;
     }
     p {
-      font-size: 18px;
+      font-size: 19px;
       line-height: 1.6;
       color: #4a5568;
       margin-bottom: 24px;
     }
     ul {
       list-style: none;
-      margin-bottom: 32px;
+      margin-bottom: 40px;
     }
     li {
-      font-size: 17px;
+      font-size: 18px;
       color: #2d3748;
-      padding: 12px 0;
-      padding-left: 32px;
+      padding: 14px 0;
+      padding-left: 36px;
       position: relative;
       line-height: 1.5;
     }
@@ -59,33 +55,35 @@
       content: '✓';
       position: absolute;
       left: 0;
-      color: #48bb78;
+      color: #10b981;
       font-weight: bold;
-      font-size: 20px;
+      font-size: 22px;
     }
-    .cta {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 16px 32px;
-      border-radius: 8px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 16px;
-      margin-top: 40px;
-      border: none;
-      cursor: pointer;
-      display: inline-block;
-      text-decoration: none;
+    .demo-instruction {
+      background: #f8fafc;
+      border-left: 4px solid #6366f1;
+      padding: 20px 24px;
+      margin: 40px 0;
+      border-radius: 4px;
     }
-    .cta:hover {
-      opacity: 0.9;
+    .demo-instruction p {
+      margin: 0;
+      font-size: 17px;
+      color: #334155;
+      margin-bottom: 12px;
+    }
+    .demo-instruction p:last-child {
+      margin-bottom: 0;
     }
     @media (max-width: 600px) {
-      .container {
-        padding: 30px 24px;
+      body {
+        padding: 40px 20px 100px 20px;
       }
       h1 {
-        font-size: 28px;
+        font-size: 32px;
+      }
+      h2 {
+        font-size: 20px;
       }
       p, li {
         font-size: 16px;
@@ -105,11 +103,12 @@
       <li>Costs pennies per conversation</li>
     </ul>
     
-    <p><strong>See it in action below</strong> - ask about policies, volunteer opportunities, or voter registration. Watch how it engages and converts.</p>
-    
-    <a href="mailto:contact@michellemccormack.com" class="cta">Interested? Get in touch</a>
+    <div class="demo-instruction">
+      <p><strong>Try it now:</strong> Click the red bubble in the corner. Ask about policies, volunteering, donating—anything.</p>
+      <p>Notice how it responds naturally, captures contact info when people are ready, and adapts to different questions? That's all automated. And we can customize every part—messaging, FAQs, branding—in minutes.</p>
+    </div>
   </div>
   
-  <script src="/widget.js" data-api-url="/api" async></script>
+  <script src="https://ai-engagement-widget.vercel.app/widget.js" data-api-url="https://ai-engagement-widget.vercel.app/api" async></script>
 </body>
 </html>
