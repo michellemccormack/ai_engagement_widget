@@ -1,8 +1,11 @@
 /**
- * Embed loader - injects the widget bundle.
- * Add to any site: <script src="https://your-domain.com/widget.js" data-api-url="https://your-domain.com/api" async></script>
+ * Widget Loader Script
+ * Embed: <script src="https://your-domain.com/widget.js" data-api-url="https://your-domain.com/api" async></script>
  */
 (function () {
+  if (window.__AI_WIDGET_LOADED__) return;
+  window.__AI_WIDGET_LOADED__ = true;
+
   var s = document.currentScript;
   var apiUrl = (s && s.getAttribute('data-api-url')) || '';
   var base = window.location.origin;
