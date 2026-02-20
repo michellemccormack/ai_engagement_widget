@@ -1,6 +1,7 @@
 /**
  * Config loading + caching.
  * Fetches from API, caches in localStorage (10 min TTL).
+ * Bubble is always clickable - uses fallback immediately if fetch fails or times out.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -8,6 +9,16 @@ import type { WidgetConfig } from '../types';
 
 const CONFIG_CACHE_KEY = 'ai_widget_config';
 const CACHE_TTL_MS = 10 * 60 * 1000;
+const FETCH_TIMEOUT_MS = 8000;
+
+const FALLBACK_CONFIG: WidgetConfig = {
+  brand_name: 'Support',
+  welcome_message: 'Hi! How can I help you today?',
+  quick_buttons: [],
+  fallback_message: "I'm not sure about that. Would you like to speak with someone?",
+  contact_cta_label: 'Contact Us',
+  require_email_to_chat: false,
+};
 
 function getApiUrl(): string {
   if (typeof window === 'undefined') return '';
@@ -44,26 +55,38 @@ function setCachedConfig(config: WidgetConfig): void {
   }
 }
 
+function fetchWithTimeout(url: string, ms: number): Promise<Response> {
+  return Promise.race([
+    fetch(url),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Config request timed out')), ms)
+    ),
+  ]);
+}
+
 export function useConfig() {
-  const [config, setConfig] = useState<WidgetConfig | null>(getCachedConfig());
-  const [loading, setLoading] = useState(!config);
+  const [config, setConfig] = useState<WidgetConfig | null>(() => {
+    const cached = getCachedConfig();
+    return cached ?? FALLBACK_CONFIG;
+  });
   const [error, setError] = useState<string | null>(null);
 
   const fetchConfig = useCallback(async () => {
     const cached = getCachedConfig();
     if (cached) {
+      console.log('[Widget] Config loaded from cache');
       setConfig(cached);
-      setLoading(false);
+      setError(null);
       return;
     }
 
-    setLoading(true);
+    console.log('[Widget] Config loading started');
     setError(null);
     const apiUrl = getApiUrl();
 
     try {
-      const res = await fetch(`${apiUrl}/config`);
-      if (!res.ok) throw new Error('Failed to load config');
+      const res = await fetchWithTimeout(`${apiUrl}/config`, FETCH_TIMEOUT_MS);
+      if (!res.ok) throw new Error(`Config API returned ${res.status}`);
       const data = await res.json();
       const widgetConfig: WidgetConfig = {
         brand_name: data.brand_name || 'Support',
@@ -78,18 +101,12 @@ export function useConfig() {
       };
       setCachedConfig(widgetConfig);
       setConfig(widgetConfig);
+      console.log('[Widget] Config loaded successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load');
-      setConfig({
-        brand_name: 'Support',
-        welcome_message: 'Hi! How can I help you today?',
-        quick_buttons: [],
-        fallback_message: "I'm not sure about that. Would you like to speak with someone?",
-        contact_cta_label: 'Contact Us',
-        require_email_to_chat: false,
-      });
-    } finally {
-      setLoading(false);
+      const msg = err instanceof Error ? err.message : 'Failed to load';
+      console.error('[Widget] Config failed:', msg);
+      setError(msg);
+      setConfig(FALLBACK_CONFIG);
     }
   }, []);
 
@@ -97,5 +114,5 @@ export function useConfig() {
     fetchConfig();
   }, [fetchConfig]);
 
-  return { config, loading, error, refetch: fetchConfig };
+  return { config: config ?? FALLBACK_CONFIG, error, refetch: fetchConfig };
 }

@@ -9,6 +9,7 @@ interface ChatPanelProps {
     theme?: { primary_color?: string };
     fallback_message?: string;
   };
+  configError?: string | null;
   messages: Message[];
   showLeadForm: boolean;
   leadFormCta?: Message['cta'];
@@ -28,6 +29,7 @@ const QUICK_CATEGORIES = [
 
 export default function ChatPanel({
   config,
+  configError,
   messages,
   showLeadForm,
   leadFormCta,
@@ -120,6 +122,13 @@ export default function ChatPanel({
 
       {/* Messages */}
       <div className="ai-widget-messages">
+
+        {/* Config load error - panel still works with fallback */}
+        {configError && (
+          <div className="ai-widget-config-error" style={{ fontSize: 12, color: '#666', marginBottom: 8, padding: 6, background: '#f5f5f5', borderRadius: 4 }}>
+            Using default settings. Config could not load: {configError}
+          </div>
+        )}
 
         {/* Welcome message */}
         <div className="ai-widget-welcome">

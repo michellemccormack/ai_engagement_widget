@@ -10,7 +10,7 @@ import { useWidget } from './hooks/useWidget';
 import type { Message } from './types';
 
 export default function Widget() {
-  const { config, loading } = useConfig();
+  const { config, error: configError } = useConfig();
   const {
     messages,
     showLeadForm,
@@ -79,20 +79,13 @@ export default function Widget() {
     }
   }, [isOpen, logEvent]);
 
-  if (loading || !config) {
-    return (
-      <div className="ai-widget-root">
-        <Bubble onClick={() => {}} isOpen={false} />
-      </div>
-    );
-  }
-
   return (
     <div className="ai-widget-root">
       {isOpen && (
         <div className="ai-widget-panel-wrapper">
           <ChatPanel
             config={config}
+            configError={configError}
             messages={messages}
             showLeadForm={showLeadForm}
             leadFormCta={leadFormCta}
