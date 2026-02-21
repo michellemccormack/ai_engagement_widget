@@ -24,36 +24,10 @@ export default function Widget() {
 
   if (!ready) return null;
 
-  // Map every category button to an actual FAQ question
   const handleQuickButton = useCallback(
     (category: string) => {
-      const categoryQuestions: Record<string, string> = {
-        // Core categories
-        'About': 'Who is Brian Shortsleeve?',
-        'Platform': "What is Brian's plan for Massachusetts?",
-        'Get Involved': 'How can I volunteer for the campaign?',
-        'Support': 'How do I donate to the campaign?',
-        'Record': 'What did Brian accomplish at the MBTA?',
-        'Voter Info': 'How can I register to vote?',
-        voting: 'How can I register to vote?',
-        'Events': 'Where can I meet Brian?',
-        'Issues': "What's wrong with Maura Healey's leadership?",
-        // Specific policy categories
-        'Tax Policy': "What is Brian's tax policy?",
-        'Business Policy': "What is Brian's position on small business and the economy?",
-        'Immigration Policy': "What is Brian's stance on immigration?",
-        'Education Policy': "What is Brian's education policy?",
-        'Public Safety': "What is Brian's public safety and crime policy?",
-        'Housing Policy': "What is Brian's housing and affordability policy?",
-        'Transportation': "What is Brian's transportation and MBTA policy?",
-        'Energy Policy': "What is Brian's energy policy?",
-        // Legacy fallback
-        'Policy': "What is Brian's tax policy?",
-      };
-
       logEvent('button_click', { category }).catch(() => {});
-      const question = categoryQuestions[category] || `Tell me about ${category}`;
-      askQuestion(question, category);
+      askQuestion(`Tell me about ${category}`, category);
     },
     [askQuestion, logEvent]
   );

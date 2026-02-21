@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getCorsHeaders } from '@/lib/cors';
 import { getConfig, getFAQs } from '@/lib/airtable';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { cacheUtils, CACHE_KEYS } from '@/lib/redis';
@@ -12,17 +13,24 @@ import { logger } from '@/lib/logger';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: getCorsHeaders(request),
+  });
+}
+
 export async function GET(request: NextRequest) {
   try {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
     const rateLimit = await checkRateLimit(ip);
     if (!rateLimit.allowed) {
-      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429, headers: getCorsHeaders(request) });
     }
 
     const cached = await cacheUtils.get<object>(CACHE_KEYS.config());
     if (cached && typeof cached === 'object' && 'brand_name' in cached) {
-      return NextResponse.json(cached);
+      return NextResponse.json(cached, { headers: getCorsHeaders(request) });
     }
 
     const [config, faqs] = await Promise.all([getConfig(), getFAQs()]);
@@ -62,9 +70,9 @@ export async function GET(request: NextRequest) {
 
     await cacheUtils.set(CACHE_KEYS.config(), response, cacheUtils.TTL.CONFIG);
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, { headers: getCorsHeaders(request) });
   } catch (error) {
     logger.error('Config endpoint error', error);
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500, headers: getCorsHeaders(request) });
   }
 }

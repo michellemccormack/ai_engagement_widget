@@ -3,7 +3,8 @@
  * Rewrite: /widget.js -> /api/widget-bundle
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getCorsHeaders } from '@/lib/cors';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -42,12 +43,12 @@ const loaderScript = `
 })();
 `.trim();
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   return new NextResponse(loaderScript, {
     headers: {
       'Content-Type': 'application/javascript',
       'Cache-Control': 'public, max-age=3600, s-maxage=86400',
-      'Access-Control-Allow-Origin': '*',
+      ...getCorsHeaders(request),
     },
   });
 }

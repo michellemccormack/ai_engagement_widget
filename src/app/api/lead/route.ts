@@ -3,6 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getCorsHeaders } from '@/lib/cors';
 import { createLead, createLog } from '@/lib/airtable';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { leadRequestSchema } from '@/lib/validation';
@@ -11,12 +12,19 @@ import { logger } from '@/lib/logger';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: getCorsHeaders(request),
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
     const rateLimit = await checkRateLimit(ip);
     if (!rateLimit.allowed) {
-      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429, headers: getCorsHeaders(request) });
     }
 
     const body = await request.json();
@@ -47,12 +55,12 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
     }).catch((e) => logger.error('Log lead_captured failed', e));
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true }, { headers: getCorsHeaders(request) });
   } catch (error) {
     if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400, headers: getCorsHeaders(request) });
     }
     logger.error('Lead endpoint error', error);
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500, headers: getCorsHeaders(request) });
   }
 }

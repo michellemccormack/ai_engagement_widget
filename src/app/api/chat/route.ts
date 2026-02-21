@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getCorsHeaders } from '@/lib/cors';
 import { getFAQs, getConfig, updateFAQ, createLog } from '@/lib/airtable';
 import { generateEmbedding, generateFallbackResponse } from '@/lib/openai';
 import { findMostSimilar } from '@/lib/embeddings';
@@ -17,6 +18,13 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const SIMILARITY_THRESHOLD = 0.60;
+
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: getCorsHeaders(request),
+  });
+}
 
 async function logAnswerServed(
   sessionId: string,
@@ -43,7 +51,7 @@ export async function POST(request: NextRequest) {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
     const rateLimit = await checkRateLimit(ip);
     if (!rateLimit.allowed) {
-      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429, headers: getCorsHeaders(request) });
     }
 
     const body = await request.json();
@@ -85,7 +93,7 @@ export async function POST(request: NextRequest) {
         request.headers.get('referrer') || undefined
       ).catch(() => {});
 
-      return NextResponse.json(response);
+      return NextResponse.json(response, { headers: getCorsHeaders(request) });
     }
 
     // No FAQ match - use AI fallback with full campaign knowledge
@@ -116,12 +124,12 @@ export async function POST(request: NextRequest) {
       request.headers.get('referrer') || undefined
     ).catch(() => {});
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, { headers: getCorsHeaders(request) });
   } catch (error) {
     if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400, headers: getCorsHeaders(request) });
     }
     logger.error('Chat endpoint error', error);
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500, headers: getCorsHeaders(request) });
   }
 }

@@ -85,6 +85,7 @@
 .ai-widget-header-text {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .ai-widget-brand {
