@@ -11,8 +11,6 @@ import type { Message } from './types';
 
 export default function Widget() {
   const { config, ready, error: configError } = useConfig();
-
-  if (!ready) return null;
   const {
     messages,
     showLeadForm,
@@ -23,6 +21,8 @@ export default function Widget() {
     closeLeadForm,
     logEvent,
   } = useWidget();
+
+  if (!ready) return null;
 
   // Map every category button to an actual FAQ question
   const handleQuickButton = useCallback(
