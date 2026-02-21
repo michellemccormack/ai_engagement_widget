@@ -20,7 +20,7 @@ interface ChatPanelProps {
   onCloseLeadForm: () => void;
 }
 
-const QUICK_CATEGORIES = [
+const FALLBACK_QUICK_CATEGORIES = [
   'About', 'Platform', 'Tax Policy', 'Business Policy',
   'Immigration Policy', 'Education Policy', 'Public Safety',
   'Housing Policy', 'Transportation', 'Energy Policy',
@@ -48,6 +48,9 @@ export default function ChatPanel({
   const [leadSuccess, setLeadSuccess] = React.useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const primaryColor = config.theme?.primary_color || '#DC143C';
+  const quickButtons = config.quick_buttons?.length
+    ? config.quick_buttons
+    : FALLBACK_QUICK_CATEGORIES.map((cat) => ({ label: cat, category: cat }));
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -111,7 +114,7 @@ export default function ChatPanel({
         <div className="ai-widget-header-content">
           <div className="ai-widget-header-text">
             <span className="ai-widget-brand">{config.brand_name}</span>
-            <span className="ai-widget-subtitle">Brian's Team</span>
+            <span className="ai-widget-subtitle-pill">Conversational AI</span>
           </div>
           <div className="ai-widget-header-badge">
             <span className="ai-widget-online-dot" />
@@ -138,14 +141,14 @@ export default function ChatPanel({
         {/* Initial quick buttons - only before first message */}
         {showInitialButtons && (
           <div className="ai-widget-quick-buttons">
-            {QUICK_CATEGORIES.map((cat) => (
+            {quickButtons.map((btn) => (
               <button
-                key={cat}
-                onClick={() => onQuickButtonClick(cat)}
+                key={btn.category}
+                onClick={() => onQuickButtonClick(btn.category)}
                 className="ai-widget-quick-btn"
                 style={{ borderColor: primaryColor, color: primaryColor }}
               >
-                {cat}
+                {btn.label}
               </button>
             ))}
           </div>
@@ -186,14 +189,14 @@ export default function ChatPanel({
               <div className="ai-widget-topic-pills">
                 <p className="ai-widget-topic-label">Explore more topics:</p>
                 <div className="ai-widget-pills-scroll">
-                  {QUICK_CATEGORIES.map((cat) => (
+                  {quickButtons.map((btn) => (
                     <button
-                      key={cat}
-                      onClick={() => onQuickButtonClick(cat)}
+                      key={btn.category}
+                      onClick={() => onQuickButtonClick(btn.category)}
                       className="ai-widget-pill"
                       style={{ borderColor: primaryColor, color: primaryColor }}
                     >
-                      {cat}
+                      {btn.label}
                     </button>
                   ))}
                 </div>

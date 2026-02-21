@@ -29,6 +29,7 @@ export default defineConfig({
     sourcemap: false,
   },
   define: {
+    'process.env.NODE_ENV': JSON.stringify('production'),
     'import.meta.env.VITE_API_URL': JSON.stringify(process.env.NEXT_PUBLIC_API_URL || ''),
   },
 });
