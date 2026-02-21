@@ -10,7 +10,9 @@ import { useWidget } from './hooks/useWidget';
 import type { Message } from './types';
 
 export default function Widget() {
-  const { config, error: configError } = useConfig();
+  const { config, ready, error: configError } = useConfig();
+
+  if (!ready) return null;
   const {
     messages,
     showLeadForm,

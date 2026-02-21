@@ -65,18 +65,17 @@ function fetchWithTimeout(url: string, ms: number): Promise<Response> {
 }
 
 export function useConfig() {
-  const [config, setConfig] = useState<WidgetConfig | null>(() => {
-    const cached = getCachedConfig();
-    return cached ?? FALLBACK_CONFIG;
-  });
+  const [config, setConfig] = useState<WidgetConfig | null>(() => getCachedConfig());
+  const [ready, setReady] = useState<boolean>(() => !!getCachedConfig());
   const [error, setError] = useState<string | null>(null);
 
   const fetchConfig = useCallback(async () => {
-    const cached = getCachedConfig();
-    if (cached) {
+    const cachedNow = getCachedConfig();
+    if (cachedNow) {
       console.log('[Widget] Config loaded from cache');
-      setConfig(cached);
+      setConfig(cachedNow);
       setError(null);
+      setReady(true);
       return;
     }
 
@@ -101,12 +100,14 @@ export function useConfig() {
       };
       setCachedConfig(widgetConfig);
       setConfig(widgetConfig);
+      setReady(true);
       console.log('[Widget] Config loaded successfully');
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load';
       console.error('[Widget] Config failed:', msg);
       setError(msg);
       setConfig(FALLBACK_CONFIG);
+      setReady(true);
     }
   }, []);
 
@@ -114,5 +115,5 @@ export function useConfig() {
     fetchConfig();
   }, [fetchConfig]);
 
-  return { config: config ?? FALLBACK_CONFIG, error, refetch: fetchConfig };
+  return { config: config ?? FALLBACK_CONFIG, ready, error, refetch: fetchConfig };
 }
