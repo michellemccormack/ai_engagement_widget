@@ -27,11 +27,11 @@
 
   var link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = assetBase + '/widget-bundle.css';
+  link.href = assetBase + '/widget-bundle.css?v=2';
   document.head.appendChild(link);
 
   var script = document.createElement('script');
-  script.src = assetBase + '/widget-bundle.js';
+  script.src = assetBase + '/widget-bundle.js?v=2';
   script.async = true;
   script.onerror = function () {
     console.warn('[AI Widget] Failed to load widget bundle');
