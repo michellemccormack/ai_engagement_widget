@@ -16,21 +16,14 @@ export default function Widget() {
     showLeadForm,
     leadFormCta,
     askQuestion,
+    handleQuickButton,
     submitLead,
     openLeadForm,
     closeLeadForm,
     logEvent,
   } = useWidget();
 
-  if (!ready) return null;
-
-  const handleQuickButton = useCallback(
-    (category: string) => {
-      logEvent('button_click', { category }).catch(() => {});
-      askQuestion(`Tell me about ${category}`, category);
-    },
-    [askQuestion, logEvent]
-  );
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleCtaClick = useCallback(
     (cta?: Message['cta']) => {
@@ -45,8 +38,6 @@ export default function Widget() {
     [openLeadForm, logEvent]
   );
 
-  const [isOpen, setIsOpen] = useState(false);
-
   const toggleOpen = useCallback(() => {
     const next = !isOpen;
     setIsOpen(next);
@@ -54,6 +45,8 @@ export default function Widget() {
       logEvent('widget_open').catch(() => {});
     }
   }, [isOpen, logEvent]);
+
+  if (!ready) return null;
 
   return (
     <div className="ai-widget-root">

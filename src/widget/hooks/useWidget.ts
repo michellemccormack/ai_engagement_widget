@@ -134,9 +134,10 @@ export function useWidget() {
 
   const handleQuickButton = useCallback(
     (category: string) => {
+      logEvent('button_click', { category }).catch(() => {});
       askQuestion(`Tell me about ${category}`, category);
     },
-    [askQuestion]
+    [askQuestion, logEvent]
   );
 
   const submitLead = useCallback(
