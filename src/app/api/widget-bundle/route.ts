@@ -36,7 +36,7 @@ const loaderScript = `
   document.head.appendChild(link);
 
   var script = document.createElement('script');
-  script.src = assetBase + '/widget-bundle.js?v=5';
+  script.src = assetBase + '/widget-bundle.js?v=7';
   script.async = true;
   script.onerror = function () { console.warn('[AI Widget] Failed to load widget bundle'); };
   document.body.appendChild(script);

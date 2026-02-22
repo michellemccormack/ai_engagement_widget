@@ -60,7 +60,7 @@
 /* ---- Panel ---- */
 .ai-widget-panel {
   width: 380px;
-  max-height: 600px;
+  max-height: min(600px, calc(100vh - 140px));
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.1);
@@ -463,7 +463,7 @@
 @media (max-width: 480px) {
   .ai-widget-panel {
     width: calc(100vw - 32px);
-    max-height: 70vh;
+    max-height: min(70vh, calc(100vh - 140px));
   }
   .ai-widget-panel-wrapper {
     right: 16px;

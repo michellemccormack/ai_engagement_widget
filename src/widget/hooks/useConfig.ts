@@ -1,15 +1,16 @@
 /**
  * Config loading + caching.
- * Fetches from API, caches in localStorage (10 min TTL).
- * Bubble is always clickable - uses fallback immediately if fetch fails or times out.
+ * Stale-while-revalidate: shows cached config immediately, always fetches fresh in background.
+ * After Airtable sync, fresh data appears within one page load—no manual refresh needed.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import type { WidgetConfig } from '../types';
 
-const CONFIG_CACHE_KEY = 'ai_widget_config';
-const CACHE_TTL_MS = 10 * 60 * 1000;
+const CONFIG_CACHE_KEY = 'ai_widget_config_v2';
+const CACHE_TTL_MS = 2 * 60 * 1000;
 const FETCH_TIMEOUT_MS = 8000;
+const FETCH_RETRY_MS = 2000;
 
 const FALLBACK_CONFIG: WidgetConfig = {
   brand_name: 'Support',
@@ -69,25 +70,13 @@ export function useConfig() {
   const [ready, setReady] = useState<boolean>(() => !!getCachedConfig());
   const [error, setError] = useState<string | null>(null);
 
-  const fetchConfig = useCallback(async () => {
-    const cachedNow = getCachedConfig();
-    if (cachedNow) {
-      console.log('[Widget] Config loaded from cache');
-      setConfig(cachedNow);
-      setError(null);
-      setReady(true);
-      return;
-    }
-
-    console.log('[Widget] Config loading started');
-    setError(null);
+  const doFetch = useCallback(async (retry = false): Promise<WidgetConfig | null> => {
     const apiUrl = getApiUrl();
-
     try {
       const res = await fetchWithTimeout(`${apiUrl}/config`, FETCH_TIMEOUT_MS);
       if (!res.ok) throw new Error(`Config API returned ${res.status}`);
       const data = await res.json();
-      const widgetConfig: WidgetConfig = {
+      return {
         brand_name: data.brand_name || 'Support',
         welcome_message: data.welcome_message || 'Hi! How can I help you today?',
         quick_buttons: data.quick_buttons || [],
@@ -98,18 +87,40 @@ export function useConfig() {
         contact_cta_url: data.contact_cta_url,
         require_email_to_chat: data.require_email_to_chat === true,
       };
-      setCachedConfig(widgetConfig);
-      setConfig(widgetConfig);
+    } catch (err) {
+      if (!retry) {
+        await new Promise((r) => setTimeout(r, FETCH_RETRY_MS));
+        return doFetch(true);
+      }
+      throw err;
+    }
+  }, []);
+
+  const fetchConfig = useCallback(async () => {
+    const cachedNow = getCachedConfig();
+    setError(null);
+    if (cachedNow) {
+      setConfig(cachedNow);
       setReady(true);
-      console.log('[Widget] Config loaded successfully');
+    }
+
+    try {
+      const widgetConfig = await doFetch();
+      if (widgetConfig) {
+        setCachedConfig(widgetConfig);
+        setConfig(widgetConfig);
+        setReady(true);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load';
       console.error('[Widget] Config failed:', msg);
       setError(msg);
-      setConfig(FALLBACK_CONFIG);
-      setReady(true);
+      if (!cachedNow) {
+        setConfig(FALLBACK_CONFIG);
+        setReady(true);
+      }
     }
-  }, []);
+  }, [doFetch]);
 
   useEffect(() => {
     fetchConfig();

@@ -2,7 +2,7 @@
  * Main widget component - orchestrates bubble, panel, config, state.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Bubble from './components/Bubble';
 import ChatPanel from './components/ChatPanel';
 import { useConfig } from './hooks/useConfig';
@@ -38,6 +38,8 @@ export default function Widget() {
     [openLeadForm, logEvent]
   );
 
+  const panelRef = useRef<HTMLDivElement>(null);
+
   const toggleOpen = useCallback(() => {
     const next = !isOpen;
     setIsOpen(next);
@@ -46,12 +48,27 @@ export default function Widget() {
     }
   }, [isOpen, logEvent]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const isPanel = panelRef.current?.contains(target);
+      const isBubble = (event.target as Element).closest?.('.ai-widget-bubble');
+      if (isOpen && !isPanel && !isBubble) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
   if (!ready) return null;
 
   return (
     <div className="ai-widget-root">
       {isOpen && (
-        <div className="ai-widget-panel-wrapper">
+        <div ref={panelRef} className="ai-widget-panel-wrapper">
           <ChatPanel
             config={config}
             configError={configError}

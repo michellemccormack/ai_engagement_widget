@@ -3,8 +3,8 @@
  */
 
 interface QuickButtonsProps {
-  buttons: Array<{ label: string; category: string }>;
-  onSelect: (category: string, label: string) => void;
+  buttons: Array<{ label: string; category: string; question?: string }>;
+  onSelect: (category: string, label: string, question?: string) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -18,7 +18,7 @@ export default function QuickButtons({ buttons, onSelect, disabled, className }:
         <button
           key={`${btn.category}-${btn.label}`}
           type="button"
-          onClick={() => onSelect(btn.category, btn.label)}
+          onClick={() => onSelect(btn.category, btn.label, btn.question)}
           disabled={disabled}
           className="ai-widget-quick-btn"
         >

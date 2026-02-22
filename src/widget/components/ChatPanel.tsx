@@ -5,7 +5,7 @@ interface ChatPanelProps {
   config: {
     brand_name: string;
     welcome_message: string;
-    quick_buttons?: Array<{ label: string; category: string }>;
+    quick_buttons?: Array<{ label: string; category: string; question?: string }>;
     theme?: { primary_color?: string };
     fallback_message?: string;
   };
@@ -14,18 +14,23 @@ interface ChatPanelProps {
   showLeadForm: boolean;
   leadFormCta?: Message['cta'];
   onAskQuestion: (message: string, category?: string) => void;
-  onQuickButtonClick: (category: string) => void;
+  onQuickButtonClick: (category: string, question?: string) => void;
   onCtaClick: (cta?: Message['cta']) => void;
   onSubmitLead: (email: string, zip?: string, name?: string, sourceCategory?: string, sourceQuestionId?: string) => Promise<boolean>;
   onCloseLeadForm: () => void;
 }
 
 const FALLBACK_QUICK_CATEGORIES = [
-  'About', 'Platform', 'Tax Policy', 'Business Policy',
+  'About', 'Compare Candidates', 'Platform', 'Tax Policy', 'Business Policy',
   'Immigration Policy', 'Education Policy', 'Public Safety',
   'Housing Policy', 'Transportation', 'Energy Policy',
   'Get Involved', 'Support',
 ];
+
+/** Fallback questions when config fails - ensures exact FAQ match for key categories */
+const FALLBACK_QUESTION_MAP: Record<string, string> = {
+  'Compare Candidates': 'Compare the candidates running for Massachusetts Governor',
+};
 
 export default function ChatPanel({
   config,
@@ -50,7 +55,11 @@ export default function ChatPanel({
   const primaryColor = config.theme?.primary_color || '#DC143C';
   const quickButtons = config.quick_buttons?.length
     ? config.quick_buttons
-    : FALLBACK_QUICK_CATEGORIES.map((cat) => ({ label: cat, category: cat }));
+    : FALLBACK_QUICK_CATEGORIES.map((cat) => ({
+        label: cat,
+        category: cat,
+        question: FALLBACK_QUESTION_MAP[cat],
+      }));
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -144,7 +153,7 @@ export default function ChatPanel({
             {quickButtons.map((btn) => (
               <button
                 key={btn.category}
-                onClick={() => onQuickButtonClick(btn.category)}
+                onClick={() => onQuickButtonClick(btn.category, btn.question)}
                 className="ai-widget-quick-btn"
                 style={{ borderColor: primaryColor, color: primaryColor }}
               >
@@ -192,7 +201,7 @@ export default function ChatPanel({
                   {quickButtons.map((btn) => (
                     <button
                       key={btn.category}
-                      onClick={() => onQuickButtonClick(btn.category)}
+                      onClick={() => onQuickButtonClick(btn.category, btn.question)}
                       className="ai-widget-pill"
                       style={{ borderColor: primaryColor, color: primaryColor }}
                     >

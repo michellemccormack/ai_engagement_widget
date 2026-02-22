@@ -35,16 +35,19 @@ export async function GET(request: NextRequest) {
 
     const [config, faqs] = await Promise.all([getConfig(), getFAQs()]);
 
-    const quickButtonsLimit = parseInt(config.quick_buttons_limit || '6', 10);
-    const categoryCounts = new Map<string, string>();
+    const quickButtonsLimit = Math.min(
+      parseInt(config.quick_buttons_limit || '12', 10) || 12,
+      24
+    );
+    const categoryToQuestion = new Map<string, string>();
     for (const faq of faqs) {
-      if (!categoryCounts.has(faq.category)) {
-        categoryCounts.set(faq.category, faq.category);
+      if (!categoryToQuestion.has(faq.category) && faq.category) {
+        categoryToQuestion.set(faq.category, faq.question || '');
       }
     }
-    const categories = Array.from(categoryCounts.keys())
+    const categories = Array.from(categoryToQuestion.entries())
       .slice(0, quickButtonsLimit)
-      .map((category) => ({ label: category, category }));
+      .map(([category, question]) => ({ label: category, category, question }));
 
     let theme: { primary_color?: string; font_family?: string } | undefined;
     if (config.theme) {

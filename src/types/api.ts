@@ -18,7 +18,7 @@ export interface ChatResponse {
   };
   confidence: number;
   related_questions?: string[];
-  source: 'faq_match' | 'web_search' | 'no_match';
+  source: 'faq_match' | 'web_search' | 'no_match' | 'profanity_blocked' | 'gibberish_blocked' | 'hot_button_blocked';
 }
 
 export interface LeadRequest {
@@ -37,6 +37,7 @@ export interface ConfigResponse {
   quick_buttons: Array<{
     label: string;
     category: string;
+    question?: string;
   }>;
   theme?: {
     primary_color?: string;
