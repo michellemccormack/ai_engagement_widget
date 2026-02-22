@@ -19,7 +19,7 @@ export default function DemoPage() {
         <h1
           className={`${tiltWarp.className} ${styles.heading}`}
         >
-          AI Campaign Assistant
+          AI Agent Assistant
         </h1>
 
         <h2 className={styles.subheading}>
@@ -27,10 +27,9 @@ export default function DemoPage() {
         </h2>
         <ul className={styles.list}>
           {[
-            'Answers voter questions 24/7',
-            'Captures qualified leads automatically',
-            "Matches your campaign's voice and brand",
-            'Costs pennies per conversation',
+            'Answers questions 24/7',
+            'Captures emails and donations',
+            'Matches your voice and brand',
           ].map((item) => (
             <li key={item} className={styles.listItem}>
               {item}
@@ -40,9 +39,10 @@ export default function DemoPage() {
 
         <div className={styles.instructionBox}>
           <p className={styles.instructionP}>
-            <strong>See it in action in the bottom right</strong> — ask about
-            policies, volunteer opportunities, or voter registration. Watch how
-            it engages and converts.
+            <strong>Try it now:</strong> Click the bubble in the corner. Ask about my work, services, the AI Campaign Assistant—anything.
+          </p>
+          <p className={styles.instructionP}>
+            Notice how it responds naturally, captures contact info when people are ready, and adapts to different questions? That&apos;s all automated. And I can customize every part—messaging, FAQs, branding—for your campaign in days.
           </p>
         </div>
       </div>
