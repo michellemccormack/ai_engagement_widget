@@ -73,6 +73,17 @@ function isHotButtonTopic(text: string): boolean {
   return !!matched;
 }
 
+const CHEATING_TERMS = [
+  'cheat', 'cheated', 'cheating', 'cheater', 'cheats',
+  'unfaithful', 'infidelity', 'affair', 'has brian been unfaithful',
+  'has brian ever cheated', 'cheated on his wife', 'cheating on wife',
+];
+
+function isCheatQuestion(text: string): boolean {
+  const lower = text.toLowerCase();
+  return CHEATING_TERMS.some((term) => lower.includes(term));
+}
+
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
@@ -196,6 +207,36 @@ export async function POST(request: NextRequest) {
           },
           confidence: 0,
           source: 'hot_button_blocked',
+        } satisfies ChatResponse,
+        { headers: getCorsHeaders(request) }
+      );
+    }
+
+    if (isCheatQuestion(validated.message)) {
+      try {
+        await createLog({
+          event_name: 'cheat_question_blocked',
+          session_id: validated.session_id,
+          payload_json: JSON.stringify({ source: 'cheat_filter' }),
+          user_agent: request.headers.get('user-agent') || undefined,
+          referrer: request.headers.get('referrer') || undefined,
+          created_at: new Date().toISOString(),
+        });
+      } catch (err) {
+        logger.error('Log cheat_question_blocked failed', err);
+      }
+
+      return NextResponse.json(
+        {
+          answer:
+            "I don't cheat. I am known for my honesty and integrity in both my home, public, and work life.",
+          cta: {
+            label: 'Get Involved',
+            url: undefined,
+            action: 'lead_capture',
+          },
+          confidence: 0,
+          source: 'cheat_filter',
         } satisfies ChatResponse,
         { headers: getCorsHeaders(request) }
       );

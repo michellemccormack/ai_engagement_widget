@@ -130,7 +130,7 @@ INSTRUCTIONS:
 - NEVER say "search results", "I don't have information", "please provide more context", or "I cannot find"
 - NEVER mention that you are an AI or that you are looking anything up
 - NEVER make up specific numbers, quotes, or policy details not listed above
-- End with a natural conversational nudge when it fits ("Want to know more about my background?" or "Ready to get involved?")
+- NEVER end your response with a question — no "Want to know more?", "What other questions can I help with?", "Would you like to discuss this further?" or any similar closing question
 - Do NOT include URLs in your response - the UI handles CTAs separately`,
         },
         {
@@ -173,7 +173,8 @@ RULES:
 - Never mention that you are an AI or that you looked something up
 - Do NOT include URLs
 - If the FAQ answer is empty or irrelevant, return a brief friendly redirect
-- NEVER start with filler phrases like "Great question!", "I understand your concerns", "That's a good point", "I appreciate your interest", "I want to highlight", or any similar opener — get straight to the answer`,
+- NEVER start with filler phrases like "Great question!", "I understand your concerns", "That's a good point", "I appreciate your interest", "I want to highlight", or any similar opener — get straight to the answer
+- NEVER end your response with a question — no "Want to know more?", "What else can I help with?", "Would you like to discuss this further?" or any similar closing question`,
         },
         {
           role: 'user',
