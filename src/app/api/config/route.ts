@@ -49,10 +49,10 @@ export async function GET(request: NextRequest) {
       .slice(0, quickButtonsLimit)
       .map(([category, question]) => ({ label: category, category, question }));
 
-    let theme: { primary_color?: string; font_family?: string } | undefined;
+    let theme: { primary_color?: string; accent_color?: string; font_family?: string } | undefined;
     if (config.theme) {
       try {
-        theme = JSON.parse(config.theme) as { primary_color?: string; font_family?: string };
+        theme = JSON.parse(config.theme) as { primary_color?: string; accent_color?: string; font_family?: string };
       } catch {
         theme = undefined;
       }

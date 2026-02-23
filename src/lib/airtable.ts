@@ -32,6 +32,7 @@ export interface FAQRecord {
   embedding?: number[];
   view_count?: number;
   helpful_count?: number;
+  force_synthesis?: boolean;
 }
 
 export interface ConfigRecord {
@@ -77,6 +78,7 @@ export async function getFAQs(): Promise<FAQRecord[]> {
           embedding: parseEmbedding(f.embedding),
           view_count: f.view_count,
           helpful_count: f.helpful_count,
+          force_synthesis: f.force_synthesis === true,
         });
       }
       fetchNextPage();

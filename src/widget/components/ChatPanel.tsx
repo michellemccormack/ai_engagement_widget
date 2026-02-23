@@ -6,7 +6,7 @@ interface ChatPanelProps {
     brand_name: string;
     welcome_message: string;
     quick_buttons?: Array<{ label: string; category: string; question?: string }>;
-    theme?: { primary_color?: string };
+    theme?: { primary_color?: string; accent_color?: string };
     fallback_message?: string;
   };
   configError?: string | null;
@@ -117,13 +117,12 @@ export default function ChatPanel({
   );
 
   return (
-    <div className="ai-widget-panel">
+    <div className="ai-widget-panel" style={{ ['--widget-accent' as string]: primaryColor } as React.CSSProperties}>
       {/* Header */}
       <div className="ai-widget-header" style={{ backgroundColor: primaryColor }}>
         <div className="ai-widget-header-content">
           <div className="ai-widget-header-text">
             <span className="ai-widget-brand">{config.brand_name}</span>
-            <span className="ai-widget-subtitle-pill">Conversational AI</span>
           </div>
           <div className="ai-widget-header-badge">
             <span className="ai-widget-online-dot" />
@@ -286,10 +285,10 @@ export default function ChatPanel({
             type="submit"
             disabled={!input.trim()}
             className="ai-widget-send-btn"
-            style={{ backgroundColor: primaryColor }}
+            style={{ backgroundColor: '#DC143C' }}
             aria-label="Send"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" width={18} height={18}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#ffffff" width={18} height={18}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.269 20.876L5.999 12zm0 0h7.5" />
             </svg>
           </button>
@@ -298,7 +297,7 @@ export default function ChatPanel({
 
       {/* Footer */}
       <div className="ai-widget-footer">
-        Automated assistant · Responses may vary
+        <span className="ai-widget-promptly-text">Promptly</span>
       </div>
     </div>
   );

@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "go": "lsof -ti :3000 | xargs kill -9 2>/dev/null; rm -rf .next; npm run build && npm run start",
     "build": "npm run build:widget && next build",
+    "refresh": "npm run go",
     "build:widget": "vite build",
     "start": "next start",
     "lint": "next lint",
@@ -32,6 +34,7 @@
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.2.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.18",
     "postcss": "^8",

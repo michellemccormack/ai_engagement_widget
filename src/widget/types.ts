@@ -25,6 +25,7 @@ export interface WidgetConfig {
   quick_buttons: Array<{ label: string; category: string }>;
   theme?: {
     primary_color?: string;
+    accent_color?: string;
     font_family?: string;
   };
   fallback_message: string;

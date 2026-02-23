@@ -39,10 +39,10 @@ export default function DemoPage() {
 
         <div className={styles.instructionBox}>
           <p className={styles.instructionP}>
-            <strong>Try it now:</strong> Click the bubble in the corner. Ask about my work, services, the AI Campaign Assistant—anything.
+            <strong>Try it now.</strong> Click the bubble in the corner and ask about my positions, priorities, or plans for Massachusetts.
           </p>
           <p className={styles.instructionP}>
-            Notice how it responds naturally, captures contact info when people are ready, and adapts to different questions? That&apos;s all automated. And I can customize every part—messaging, FAQs, branding—for your campaign in days.
+            Notice how it responds clearly, provides detailed policy answers, and directs people to donate or volunteer when they&apos;re ready? That&apos;s all automated. And every part can be customized to reflect your voice, your platform, and your campaign branding in just days.
           </p>
         </div>
       </div>

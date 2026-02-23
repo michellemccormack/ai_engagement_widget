@@ -32,7 +32,7 @@ const loaderScript = `
 
   var link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = assetBase + '/widget-bundle.css?v=5';
+  link.href = assetBase + '/widget-bundle.css?v=8';
   document.head.appendChild(link);
 
   var script = document.createElement('script');

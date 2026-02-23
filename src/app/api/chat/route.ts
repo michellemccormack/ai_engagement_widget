@@ -68,7 +68,9 @@ const HOT_BUTTON_TERMS = [
 
 function isHotButtonTopic(text: string): boolean {
   const lower = text.toLowerCase();
-  return HOT_BUTTON_TERMS.some((term) => lower.includes(term));
+  const matched = HOT_BUTTON_TERMS.find((term) => lower.includes(term));
+  if (matched) console.log(`Hot button matched: "${matched}"`);
+  return !!matched;
 }
 
 export async function OPTIONS(request: NextRequest) {
@@ -229,15 +231,15 @@ export async function POST(request: NextRequest) {
         logger.error('updateFAQ failed', e)
       );
 
-      const SYNTHESIS_THRESHOLD = 0.88;
-      const answer =
-        similarity >= SYNTHESIS_THRESHOLD
-          ? faq.short_answer
-          : await synthesizeAnswerFromFAQ(
-              validated.message,
-              faq.short_answer,
-              config.fallback_message || "I'm not sure about that."
-            );
+      const SYNTHESIS_THRESHOLD = 0.70;
+      const shouldSynthesize = faq.force_synthesis === true || similarity < SYNTHESIS_THRESHOLD;
+      const answer = shouldSynthesize
+        ? await synthesizeAnswerFromFAQ(
+            validated.message,
+            faq.short_answer,
+            config.fallback_message || "I'm not sure about that."
+          )
+        : faq.short_answer;
 
       const response: ChatResponse = {
         answer,

@@ -13,6 +13,7 @@ export interface AirtableFAQ {
     embedding?: number[];
     view_count?: number;
     helpful_count?: number;
+    force_synthesis?: boolean;
   };
 }
 
