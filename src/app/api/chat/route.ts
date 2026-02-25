@@ -84,6 +84,35 @@ function isCheatQuestion(text: string): boolean {
   return CHEATING_TERMS.some((term) => lower.includes(term));
 }
 
+function isDomainAllowed(request: NextRequest, allowedDomains?: string[]): boolean {
+  // If no domains configured, allow all (fail open during setup)
+  if (!allowedDomains || allowedDomains.length === 0) return true;
+
+  const origin = request.headers.get('origin') || '';
+  const referer = request.headers.get('referer') || '';
+
+  const getHostname = (url: string): string => {
+    try {
+      return new URL(url).hostname.replace(/^www\./, '');
+    } catch {
+      return '';
+    }
+  };
+
+  const originHost = getHostname(origin);
+  const refererHost = getHostname(referer);
+
+  // Allow localhost for development
+  if (originHost === 'localhost' || refererHost === 'localhost') return true;
+
+  const normalizedAllowed = allowedDomains.map((d) => d.replace(/^www\./, ''));
+
+  return (
+    normalizedAllowed.includes(originHost) ||
+    normalizedAllowed.includes(refererHost)
+  );
+}
+
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
@@ -243,6 +272,25 @@ export async function POST(request: NextRequest) {
     }
 
     const [config, faqs] = await Promise.all([getConfig(), getFAQs()]);
+
+    let allowedDomains: string[] | undefined;
+    try {
+      const raw = config['allowed_domains'];
+      if (raw) allowedDomains = JSON.parse(raw) as string[];
+    } catch {
+      // ignore invalid JSON
+    }
+
+    if (!isDomainAllowed(request, allowedDomains)) {
+      logger.warn('Domain not allowed', {
+        origin: request.headers.get('origin'),
+        referer: request.headers.get('referer'),
+      });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 403, headers: getCorsHeaders(request) }
+      );
+    }
 
     const queryEmbedding = await generateEmbedding(validated.message);
 

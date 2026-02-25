@@ -22,7 +22,7 @@ export interface Message {
 export interface WidgetConfig {
   brand_name: string;
   welcome_message: string;
-  quick_buttons: Array<{ label: string; category: string }>;
+  quick_buttons: Array<{ label: string; category: string; question?: string }>;
   theme?: {
     primary_color?: string;
     accent_color?: string;

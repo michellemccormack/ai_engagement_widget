@@ -13,7 +13,7 @@ export function getCorsHeaders(request: NextRequest) {
     : ALLOWED_ORIGINS[0];
   
   return {
-    'Access-Control-Allow-Origin': allowedOrigin || '*',
+    'Access-Control-Allow-Origin': allowedOrigin || 'https://brianshortsleeve.com',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Credentials': 'true',
