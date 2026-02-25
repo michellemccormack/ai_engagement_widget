@@ -90,6 +90,7 @@ function isDomainAllowed(request: NextRequest, allowedDomains?: string[]): boole
 
   const origin = request.headers.get('origin') || '';
   const referer = request.headers.get('referer') || '';
+  const host = request.headers.get('host') || '';
 
   const getHostname = (url: string): string => {
     try {
@@ -102,8 +103,26 @@ function isDomainAllowed(request: NextRequest, allowedDomains?: string[]): boole
   const originHost = getHostname(origin);
   const refererHost = getHostname(referer);
 
-  // Allow localhost for development
-  if (originHost === 'localhost' || refererHost === 'localhost') return true;
+  // Allow localhost and 127.0.0.1 for development (Origin/Referer may be empty for same-origin)
+  if (
+    originHost === 'localhost' ||
+    refererHost === 'localhost' ||
+    originHost === '127.0.0.1' ||
+    refererHost === '127.0.0.1' ||
+    host.includes('localhost') ||
+    host.includes('127.0.0.1')
+  ) {
+    return true;
+  }
+
+  // Always allow Vercel deployment (demo page) and same-origin requests
+  if (
+    originHost.endsWith('.vercel.app') ||
+    refererHost.endsWith('.vercel.app') ||
+    host.endsWith('.vercel.app')
+  ) {
+    return true;
+  }
 
   const normalizedAllowed = allowedDomains.map((d) => d.replace(/^www\./, ''));
 
