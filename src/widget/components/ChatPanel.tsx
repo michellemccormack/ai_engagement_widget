@@ -192,16 +192,16 @@ export default function ChatPanel({
               </button>
             )}
 
-            {/* Persistent topic pills after the last completed bot answer */}
+            {/* Persistent topic buttons after the last completed bot answer - same grid as opening */}
             {idx === lastBotIdx && (
               <div className="ai-widget-topic-pills">
                 <p className="ai-widget-topic-label">Explore more topics:</p>
-                <div className="ai-widget-pills-scroll">
+                <div className="ai-widget-quick-buttons">
                   {quickButtons.map((btn) => (
                     <button
                       key={btn.category}
                       onClick={() => onQuickButtonClick(btn.category, btn.question)}
-                      className="ai-widget-pill"
+                      className="ai-widget-quick-btn"
                       style={{ borderColor: primaryColor, color: primaryColor }}
                     >
                       {btn.label}
