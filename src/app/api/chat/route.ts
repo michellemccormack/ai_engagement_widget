@@ -54,6 +54,7 @@ function isGibberishOrEmojiOnly(text: string): boolean {
 const HOT_BUTTON_TERMS = [
   'lgbtq', 'lgbt', 'gay', 'lesbian', 'bisexual', 'transgender', 'trans ',
   'nonbinary', 'non-binary', 'gender identity', 'sexual orientation',
+  'can men be women', 'can women be men', 'biological sex', 'born a man', 'born a woman', 'born male', 'born female', 'sex change', 'transition', 'gender dysphoria',
   'same sex', 'same-sex', 'gay marriage', 'gay rights', 'pride month',
   'abortion', 'pro life', 'pro-life', 'pro choice', 'pro-choice',
   'roe v wade', 'roe vs wade', 'reproductive rights', 'planned parenthood',
@@ -417,7 +418,14 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400, headers: getCorsHeaders(request) });
     }
-    logger.error('Chat endpoint error', error);
+    const err = error instanceof Error ? error : new Error(String(error));
+    const status = (error as { status?: number })?.status;
+    logger.error('Chat endpoint error', {
+      message: err.message,
+      stack: err.stack,
+      status,
+      name: err.name,
+    });
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500, headers: getCorsHeaders(request) });
   }
 }

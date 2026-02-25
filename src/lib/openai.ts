@@ -83,12 +83,32 @@ OPPONENT (Maura Healey - current Governor):
 - Under Healey: costs up, accountability down, jobs leaving, families struggling
 `;
 
+async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 3): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastError = e;
+      const status = (e as { status?: number })?.status;
+      if (attempt < maxAttempts && (status === 429 || status === 500 || status === 503)) {
+        await new Promise((r) => setTimeout(r, 1000 * attempt));
+      } else {
+        throw e;
+      }
+    }
+  }
+  throw lastError;
+}
+
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const response = await openai.embeddings.create({
-    model: EMBEDDING_MODEL,
-    input: text.slice(0, 8000),
+  return withRetry(async () => {
+    const response = await openai.embeddings.create({
+      model: EMBEDDING_MODEL,
+      input: text.slice(0, 8000),
+    });
+    return response.data[0].embedding;
   });
-  return response.data[0].embedding;
 }
 
 export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
