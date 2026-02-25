@@ -90,7 +90,8 @@ function isDomainAllowed(request: NextRequest, allowedDomains?: string[]): boole
 
   const origin = request.headers.get('origin') || '';
   const referer = request.headers.get('referer') || '';
-  const host = request.headers.get('host') || '';
+  const hostRaw = request.headers.get('host') || request.headers.get('x-forwarded-host') || '';
+  const host = hostRaw.split(',')[0].trim();
 
   const getHostname = (url: string): string => {
     try {
@@ -100,8 +101,18 @@ function isDomainAllowed(request: NextRequest, allowedDomains?: string[]): boole
     }
   };
 
+  const getHostFromHeader = (h: string): string => {
+    if (!h) return '';
+    try {
+      return new URL('http://' + h).hostname.replace(/^www\./, '');
+    } catch {
+      return h.split(':')[0].replace(/^www\./, '');
+    }
+  };
+
   const originHost = getHostname(origin);
   const refererHost = getHostname(referer);
+  const hostName = getHostFromHeader(host);
 
   // Allow localhost and 127.0.0.1 for development (Origin/Referer may be empty for same-origin)
   if (
@@ -109,8 +120,8 @@ function isDomainAllowed(request: NextRequest, allowedDomains?: string[]): boole
     refererHost === 'localhost' ||
     originHost === '127.0.0.1' ||
     refererHost === '127.0.0.1' ||
-    host.includes('localhost') ||
-    host.includes('127.0.0.1')
+    hostName === 'localhost' ||
+    hostName === '127.0.0.1'
   ) {
     return true;
   }
@@ -119,7 +130,7 @@ function isDomainAllowed(request: NextRequest, allowedDomains?: string[]): boole
   if (
     originHost.endsWith('.vercel.app') ||
     refererHost.endsWith('.vercel.app') ||
-    host.endsWith('.vercel.app')
+    hostName.endsWith('.vercel.app')
   ) {
     return true;
   }
@@ -128,7 +139,8 @@ function isDomainAllowed(request: NextRequest, allowedDomains?: string[]): boole
 
   return (
     normalizedAllowed.includes(originHost) ||
-    normalizedAllowed.includes(refererHost)
+    normalizedAllowed.includes(refererHost) ||
+    normalizedAllowed.includes(hostName)
   );
 }
 
