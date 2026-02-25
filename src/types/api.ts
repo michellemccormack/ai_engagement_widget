@@ -18,7 +18,7 @@ export interface ChatResponse {
   };
   confidence: number;
   related_questions?: string[];
-  source: 'faq_match' | 'web_search' | 'no_match' | 'profanity_blocked' | 'gibberish_blocked' | 'hot_button_blocked';
+  source: 'faq_match' | 'web_search' | 'no_match' | 'profanity_blocked' | 'gibberish_blocked' | 'hot_button_blocked' | 'cheat_filter';
 }
 
 export interface LeadRequest {

@@ -19,7 +19,7 @@ export default function DemoPage() {
         <h1
           className={`${tiltWarp.className} ${styles.heading}`}
         >
-          AI Agent Assistant
+          Promptly
         </h1>
 
         <h2 className={styles.subheading}>
@@ -29,7 +29,7 @@ export default function DemoPage() {
           {[
             'Answers questions 24/7',
             'Captures emails and donations',
-            'Matches your voice and brand',
+            'Matches your voice in conversational language',
           ].map((item) => (
             <li key={item} className={styles.listItem}>
               {item}
@@ -39,7 +39,7 @@ export default function DemoPage() {
 
         <div className={styles.instructionBox}>
           <p className={styles.instructionP}>
-            <strong>Try it now.</strong> Click the bubble in the corner and ask about my positions, priorities, or plans for Massachusetts.
+            <strong>Try it now.</strong> Click the bubble in the corner and ask about Brian's positions, priorities, or plans for Massachusetts.
           </p>
           <p className={styles.instructionP}>
             Notice how it responds clearly, provides detailed policy answers, and directs people to donate or volunteer when they&apos;re ready? That&apos;s all automated. And every part can be customized to reflect your voice, your platform, and your campaign branding in just days.
